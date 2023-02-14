@@ -90,15 +90,25 @@ mod generic_impl {
     }
 }
     // Tuple implementation GENERIC
-    impl<T: TryInto<u8, Error=TryFromIntError>> TryFrom<(T, T, T)> for Color {
+    impl<T> TryFrom<(T, T, T)> for Color
+    where
+        T: TryInto<u8, Error=TryFromIntError>
+    {
         type Error = IntoColorError;
         fn try_from((r, g, b): (T, T, T)) -> Result<Self, Self::Error> {
-            Ok(Color { red: r.try_into()?, green: g.try_into()?, blue: b.try_into()? })
+            Ok(Color {
+                red: r.try_into()?,
+                green: g.try_into()?,
+                blue: b.try_into()?
+            })
         }
     }
 
     // Array implementation GENERIC
-    impl<T: TryInto<u8, Error=TryFromIntError>> TryFrom<[T; 3]> for Color {
+    impl<T> TryFrom<[T; 3]> for Color
+    where
+        T: TryInto<u8, Error=TryFromIntError>
+    {
         type Error = IntoColorError;
         fn try_from([r, g, b]: [T; 3]) -> Result<Self, Self::Error> {
             (r, g, b).try_into()
@@ -106,7 +116,10 @@ mod generic_impl {
     }
 
     // Slice implementation GENERIC
-    impl<T: TryInto<u8, Error=TryFromIntError> + Copy> TryFrom<&[T]> for Color {
+    impl<T> TryFrom<&[T]> for Color
+    where
+        T: TryInto<u8, Error=TryFromIntError> + Copy
+    {
         type Error = IntoColorError;
         fn try_from(slice: &[T]) -> Result<Self, Self::Error> {
             match slice {
